@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CGPA Calculator - Applied Mathematics</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        /* Landing Page Styles */
+        .landing-page {
+            padding: 50px 30px;
+            text-align: center;
+        }
+
+        .landing-page h2 {
+            color: #2a5298;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
+
+        .landing-page > p {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 40px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .option-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
+
+        .option-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .option-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .option-card h3 {
+            color: #2a5298;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+        }
+
+        .option-card p {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Common Calculator Styles */
+        .calculator-mode {
+            display: none;
+        }
+
+        .calculator-mode.active {
+            display: block;
+        }
+
+        .back-button {
+            padding: 10px 20px;
+            margin: 20px 30px;
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-button:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        /* Semester GPA Input Mode Styles */
+        .semester-gpa-input {
+            padding: 30px;
+        }
+
+        .semester-gpa-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .semester-input-card {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .semester-input-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.1);
+        }
+
+        .semester-input-card h3 {
+            color: #2a5298;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .credit-display {
+            background: #667eea;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        /* Single Semester Mode Styles */
+        .semester-selector {
+            padding: 30px;
+            text-align: center;
+        }
+
+        .semester-selector h2 {
+            color: #2a5298;
+            margin-bottom: 20px;
+        }
+
+        .semester-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .semester-btn {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .semester-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .summary-card h3 {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .summary-card .value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .cgpa-display {
+            font-size: 2.5em !important;
+            color: #2a5298;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .semester {
+            margin-bottom: 30px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .semester-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .semester-header:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        .semester-header h2 {
+            font-size: 1.3em;
+        }
+
+        .semester-gpa {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .semester-content {
+            padding: 20px;
+            display: none;
+        }
+
+        .semester-content.active {
+            display: block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        th {
+            background: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .course-code {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .course-title {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .grade-select {
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1em;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .grade-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .grade-select:hover {
+            border-color: #667eea;
+        }
+
+        .credits {
+            text-align: center;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .actions {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .grading-info {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .grading-info h3 {
+            color: #2a5298;
+            margin-bottom: 15px;
+        }
+
+        .grading-table {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .grade-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: white;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+
+        .toggle-icon {
+            transition: transform 0.3s;
+        }
+
+        .toggle-icon.rotated {
+            transform: rotate(180deg);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .summary {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 CGPA Calculator</h1>
+            <p>Applied Mathematics - 8 Semester Program</p>
+        </div>
+
+        <!-- Landing Page -->
+        <div id="landingPage" class="landing-page">
+            <h2>Choose Your Calculation Method</h2>
+            <p>Select the method that best suits your needs</p>
+            
+            <div class="options-grid">
+                <div class="option-card" onclick="showMode('singleSemester')">
+                    <div class="option-icon">📊</div>
+                    <h3>Single Semester GPA</h3>
+                    <p>Calculate the GPA for one specific semester by entering individual course grades</p>
+                </div>
+
+                <div class="option-card" onclick="showMode('semesterGPA')">
+                    <div class="option-icon">📈</div>
+                    <h3>Overall CGPA from Semester GPAs</h3>
+                    <p>Calculate your overall CGPA by entering the GPA you achieved in each semester (faster method)</p>
+                </div>
+
+                <div class="option-card" onclick="showMode('fullCourses')">
+                    <div class="option-icon">📚</div>
+                    <h3>Detailed Course-by-Course</h3>
+                    <p>Calculate your overall CGPA by entering grades for all individual courses across all semesters</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mode 1: Single Semester Calculator -->
+        <div id="singleSemesterMode" class="calculator-mode">
+            <button class="back-button" onclick="showLanding()">← Back to Options</button>
+            
+            <div class="semester-selector">
+                <h2>Select a Semester to Calculate GPA</h2>
+                <div class="semester-buttons" id="semesterButtons"></div>
+            </div>
+
+            <div id="singleSemesterContent" class="hidden">
+                <div class="summary">
+                    <div class="summary-card">
+                        <h3>Semester GPA</h3>
+                        <div class="value cgpa-display" id="singleSemGPA">0.00</div>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Total Credits</h3>
+                        <div class="value" id="singleSemCredits">0</div>
+                    </div>
+                </div>
+
+                <div class="content" id="singleSemesterTable"></div>
+
+                <div class="actions">
+                    <button class="btn-primary" onclick="calculateSingleSemester()">📊 Calculate GPA</button>
+                    <button class="btn-secondary" onclick="resetSingleSemester()">🔄 Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mode 2: Semester GPA Input -->
+        <div id="semesterGPAMode" class="calculator-mode">
+            <button class="back-button" onclick="showLanding()">← Back to Options</button>
+            
+            <div class="summary">
+                <div class="summary-card">
+                    <h3>Overall CGPA</h3>
+                    <div class="value cgpa-display" id="overallCGPA">0.00</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Total Credits</h3>
+                    <div class="value" id="totalCreditsGPA">152</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Completed Semesters</h3>
+                    <div class="value" id="completedSems">0</div>
+                </div>
+            </div>
+
+            <div class="semester-gpa-input">
+                <div class="semester-gpa-grid" id="semesterGPAGrid"></div>
+            </div>
+
+            <div class="actions">
+                <button class="btn-primary" onclick="calculateFromGPAs()">📊 Calculate CGPA</button>
+                <button class="btn-secondary" onclick="resetGPAMode()">🔄 Reset All</button>
+            </div>
+        </div>
+
+        <!-- Mode 3: Full Course Calculator -->
+        <div id="fullCoursesMode" class="calculator-mode">
+            <button class="back-button" onclick="showLanding()">← Back to Options</button>
+            
+            <div class="summary">
+                <div class="summary-card">
+                    <h3>Current CGPA</h3>
+                    <div class="value cgpa-display" id="cgpa">0.00</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Total Credits</h3>
+                    <div class="value" id="totalCredits">152</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Completed Credits</h3>
+                    <div class="value" id="completedCredits">0</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Average GPA</h3>
+                    <div class="value" id="avgGPA">0.00</div>
+                </div>
+            </div>
+
+            <div class="content" id="semestersContainer"></div>
+
+            <div class="actions">
+                <button class="btn-primary" onclick="calculateCGPA()">📊 Calculate CGPA</button>
+                <button class="btn-secondary" onclick="resetAll()">🔄 Reset All</button>
+                <button class="btn-secondary" onclick="expandAll()">📂 Expand All</button>
+                <button class="btn-secondary" onclick="collapseAll()">📁 Collapse All</button>
+            </div>
+
+            <div class="content">
+                <div class="grading-info">
+                    <h3>📋 Grading Scale Reference</h3>
+                    <div class="grading-table">
+                        <div class="grade-item"><span>A+ (80% or above)</span><strong>4.00</strong></div>
+                        <div class="grade-item"><span>A (75% - 80%)</span><strong>3.75</strong></div>
+                        <div class="grade-item"><span>A- (70% - 75%)</span><strong>3.50</strong></div>
+                        <div class="grade-item"><span>B+ (65% - 70%)</span><strong>3.25</strong></div>
+                        <div class="grade-item"><span>B (60% - 65%)</span><strong>3.00</strong></div>
+                        <div class="grade-item"><span>B- (55% - 60%)</span><strong>2.75</strong></div>
+                        <div class="grade-item"><span>C+ (50% - 45%)</span><strong>2.50</strong></div>
+                        <div class="grade-item"><span>C (45% - 50%)</span><strong>2.25</strong></div>
+                        <div class="grade-item"><span>D (40% - 45%)</span><strong>2.00</strong></div>
+                        <div class="grade-item"><span>F (Below 40%)</span><strong>0.00</strong></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const semesters = [
+            {
+                name: "Semester 1 - Year 1, Term I",
+                courses: [
+                    { code: "0541 06 AMath-1101", title: "Algebra and Trigonometry", credits: 3 },
+                    { code: "0541 06 AMath-1103", title: "Differential and Integral Calculus", credits: 3 },
+                    { code: "0714 06 CSTE-1101", title: "Computer Applications", credits: 3 },
+                    { code: "0231 06 Eng-1101", title: "English for Professional Communication", credits: 3 },
+                    { code: "0533 06 Phy-1101", title: "Properties of Matter, Wave and Sound", credits: 3 },
+                    { code: "0541 06 AMath-1102", title: "Math Practical-I: Mathematica", credits: 2 },
+                    { code: "0541 06 AMath-1104", title: "Viva-voce", credits: 1 }
+                ]
+            },
+            {
+                name: "Semester 2 - Year 1, Term II",
+                courses: [
+                    { code: "0541 06 AMath-1201", title: "Set Theory and Linear Algebra", credits: 3 },
+                    { code: "0541 06 AMath-1203", title: "Applications of Calculus", credits: 3 },
+                    { code: "0541 06 AMath-1205", title: "Programming with C/C++", credits: 3 },
+                    { code: "0741 06 CSTE-1201", title: "Data Structure and Algorithm", credits: 3 },
+                    { code: "0542 06 Stat-1201", title: "Descriptive and Inferential Statistics", credits: 3 },
+                    { code: "0533 06 Phy-1201", title: "Thermodynamics and Heat Transfer", credits: 3 },
+                    { code: "0541 06 AMath-1202", title: "Math Practical II: Programming C/C++", credits: 2 },
+                    { code: "0541 06 AMath-1204", title: "Viva-voce", credits: 1 }
+                ]
+            },
+            {
+                name: "Semester 3 - Year 2, Term I",
+                courses: [
+                    { code: "0541 06 AMath-2101", title: "Ordinary Differential Equations", credits: 3 },
+                    { code: "0541 06 AMath-2103", title: "Vector and Tensor Analysis", credits: 3 },
+                    { code: "0542 06 Stat-2101", title: "Probability Theory and Distribution Functions", credits: 3 },
+                    { code: "0311 06 Eco-2101", title: "Principles of Economics", credits: 3 },
+                    { code: "0533 06 Phy-2101", title: "Electricity and Magnetism", credits: 3 },
+                    { code: "0541 06 AMath-2102", title: "Math Practical –III: MATLAB-I", credits: 2 },
+                    { code: "0541 06 AMath-2104", title: "Viva-voce", credits: 1 }
+                ]
+            },
+            {
+                name: "Semester 4 - Year 2, Term II",
+                courses: [
+                    { code: "0541 06 AMath-2201", title: "Analytic Plane Geometry", credits: 3 },
+                    { code: "0541 06 AMath-2203", title: "Partial Differential Equations", credits: 3 },
+                    { code: "0541 06 AMath-2205", title: "FORTRAN Programming", credits: 3 },
+                    { code: "0741 06 CSTE-2201", title: "Discrete Mathematics and Graph Theory", credits: 3 },
+                    { code: "0542 06 Stat-2101", title: "Statistical Modeling and Time Series Analysis", credits: 3 },
+                    { code: "0542 06 Stat-2102", title: "Data Analysis with Application", credits: 3 },
+                    { code: "0541 06 AMath-2202", title: "Math Practical –IV: FORTRAN Programming", credits: 2 },
+                    { code: "0541 06 AMath-2204", title: "Viva-voce", credits: 1 }
+                ]
+            },
+            {
+                name: "Semester 5 - Year 3, Term I",
+                courses: [
+                    { code: "0541 06 AMath-3101", title: "Analytic Solid Geometry", credits: 3 },
+                    { code: "0541 06 AMath-3103", title: "Real Analysis", credits: 3 },
+                    { code: "0541 06 AMath-3105", title: "Numerical Analysis", credits: 3 },
+                    { code: "0541 06 AMath-3107", title: "Linear Programming and Game Theory", credits: 3 },
+                    { code: "0541 06 AMath-3109", title: "Differential Geometry", credits: 3 },
+                    { code: "0541 06 AMath-3111", title: "Field Trip-I", credits: 1 },
+                    { code: "0541 06 AMath-3102", title: "Math Practical-V: Data Visualization Lab", credits: 2 },
+                    { code: "0541 06 AMath-3104", title: "Viva-voce", credits: 1 }
+                ]
+            },
+            {
+                name: "Semester 6 - Year 3, Term II",
+                courses: [
+                    { code: "0541 06 AMath-3201", title: "Non-linear Programming and Project Management", credits: 3 },
+                    { code: "0541 06 AMath-3203", title: "Methods of Applied Mathematics", credits: 3 },
+                    { code: "0541 06 AMath-3205", title: "Complex Analysis", credits: 3 },
+                    { code: "0541 06 AMath-3207", title: "Mechanics", credits: 3 },
+                    { code: "0541 06 AMath-3209", title: "Integral Equations", credits: 3 },
+                    { code: "0541 06 AMath-3202", title: "Math Practical-VI: Python", credits: 2 },
+                    { code: "0541 06 AMath-3204", title: "Viva-voce", credits: 1 }
+                ]
+            },
+            {
+                name: "Semester 7 - Year 4, Term I",
+                courses: [
+                    { code: "0541 06 AMath-4101", title: "Classical Mechanics", credits: 3 },
+                    { code: "0541 06 AMath-4103", title: "Fluid Mechanics", credits: 3 },
+                    { code: "0541 06 AMath-4105", title: "Financial Mathematics", credits: 3 },
+                    { code: "0541 06 AMath-4107", title: "Mathematics for Machine Learning and Deep Learning", credits: 3 },
+                    { code: "0541 06 AMath-4109", title: "Project-I: Introduction to Research Methodology", credits: 3 },
+                    { code: "0541 06 AMath-4102", title: "Math Practical VII: R Programming", credits: 2 },
+                    { code: "0541 06 AMath-4104", title: "Viva-voce", credits: 1 }
+                ]
+            },
+            {
+                name: "Semester 8 - Year 4, Term II",
+                courses: [
+                    { code: "0541 06 AMath-4201", title: "Artificial Neural Networks", credits: 3 },
+                    { code: "0541 06 AMath-4203", title: "Mathematical Cosmology", credits: 3 },
+                    { code: "0541 06 AMath-4205", title: "Mathematical Astronomy", credits: 3 },
+                    { code: "0541 06 AMath-4207", title: "Mathematical Modeling in Biology", credits: 3 },
+                    { code: "0541 06 AMath-4209", title: "Project-II: Dissertation and Project Viva", credits: 3 },
+                    { code: "0541 06 AMath-4211", title: "Field Trip-II", credits: 1 },
+                    { code: "0541 06 AMath-4202", title: "Math Practical –VIII: MATLAB-II", credits: 2 },
+                    { code: "0541 06 AMath-4204", title: "Viva-voce", credits: 1 }
+                ]
+            }
+        ];
+
+        const gradePoints = {
+            'A+': 4.00,
+            'A': 3.75,
+            'A-': 3.50,
+            'B+': 3.25,
+            'B': 3.00,
+            'B-': 2.75,
+            'C+': 2.50,
+            'C': 2.25,
+            'D': 2.00,
+            'F': 0.00
+        };
+
+        let currentSingleSemester = null;
+
+        // Navigation Functions
+        function showLanding() {
+            document.getElementById('landingPage').classList.remove('hidden');
+            document.getElementById('singleSemesterMode').classList.remove('active');
+            document.getElementById('semesterGPAMode').classList.remove('active');
+            document.getElementById('fullCoursesMode').classList.remove('active');
+        }
+
+        function showMode(mode) {
+            document.getElementById('landingPage').classList.add('hidden');
+            
+            if (mode === 'singleSemester') {
+                document.getElementById('singleSemesterMode').classList.add('active');
+                renderSemesterButtons();
+            } else if (mode === 'semesterGPA') {
+                document.getElementById('semesterGPAMode').classList.add('active');
+                renderGPAInputs();
+            } else if (mode === 'fullCourses') {
+                document.getElementById('fullCoursesMode').classList.add('active');
+                renderSemesters();
+            }
+        }
+
+        // Mode 1: Single Semester Functions
+        function renderSemesterButtons() {
+            const container = document.getElementById('semesterButtons');
+            container.innerHTML = '';
+
+            semesters.forEach((semester, index) => {
+                const button = document.createElement('button');
+                button.className = 'semester-btn';
+                button.textContent = `Semester ${index + 1}`;
+                button.onclick = () => selectSemester(index);
+                container.appendChild(button);
+            });
+        }
+
+        function selectSemester(index) {
+            currentSingleSemester = index;
+            const semester = semesters[index];
+            const totalCredits = semester.courses.reduce((sum, course) => sum + course.credits, 0);
+
+            document.getElementById('singleSemesterContent').classList.remove('hidden');
+            document.getElementById('singleSemCredits').textContent = totalCredits;
+
+            const tableContainer = document.getElementById('singleSemesterTable');
+            tableContainer.innerHTML = `
+                <h2 style="color: #2a5298; margin-bottom: 20px;">${semester.name}</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 20%">Course Code</th>
+                            <th style="width: 45%">Course Title</th>
+                            <th style="width: 10%">Credits</th>
+                            <th style="width: 25%">Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${semester.courses.map((course, courseIndex) => `
+                            <tr>
+                                <td class="course-code">${course.code}</td>
+                                <td class="course-title">${course.title}</td>
+                                <td class="credits">${course.credits}</td>
+                                <td>
+                                    <select class="grade-select" id="single_grade_${courseIndex}" onchange="calculateSingleSemester()">
+                                        <option value="">Select Grade</option>
+                                        ${Object.keys(gradePoints).map(grade => 
+                                            `<option value="${grade}">${grade} (${gradePoints[grade].toFixed(2)})</option>`
+                                        ).join('')}
+                                    </select>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            // Scroll to content
+            document.getElementById('singleSemesterContent').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function calculateSingleSemester() {
+            if (currentSingleSemester === null) return;
+
+            const semester = semesters[currentSingleSemester];
+            let totalPoints = 0;
+            let totalCredits = 0;
+
+            semester.courses.forEach((course, courseIndex) => {
+                const gradeSelect = document.getElementById(`single_grade_${courseIndex}`);
+                const grade = gradeSelect.value;
+
+                if (grade) {
+                    totalPoints += gradePoints[grade] * course.credits;
+                    totalCredits += course.credits;
+                }
+            });
+
+            const gpa = totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : '0.00';
+            document.getElementById('singleSemGPA').textContent = gpa;
+        }
+
+        function resetSingleSemester() {
+            if (currentSingleSemester === null) return;
+            
+            if (confirm('Reset all grades for this semester?')) {
+                const semester = semesters[currentSingleSemester];
+                semester.courses.forEach((course, courseIndex) => {
+                    document.getElementById(`single_grade_${courseIndex}`).value = '';
+                });
+                document.getElementById('singleSemGPA').textContent = '0.00';
+            }
+        }
+
+        // Mode 2: Semester GPA Input Functions
+        function renderGPAInputs() {
+            const container = document.getElementById('semesterGPAGrid');
+            container.innerHTML = '';
+
+            semesters.forEach((semester, index) => {
+                const totalCredits = semester.courses.reduce((sum, course) => sum + course.credits, 0);
+                
+                const card = document.createElement('div');
+                card.className = 'semester-input-card';
+                card.innerHTML = `
+                    <h3>Semester ${index + 1}</h3>
+                    <div class="input-group">
+                        <label for="gpa_input_${index}">Semester GPA (0.00 - 4.00)</label>
+                        <input type="number" 
+                               id="gpa_input_${index}" 
+                               min="0" 
+                               max="4" 
+                               step="0.01" 
+                               placeholder="Enter GPA"
+                               onchange="calculateFromGPAs()">
+                    </div>
+                    <div class="credit-display">Credits: ${totalCredits}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function calculateFromGPAs() {
+            let totalPoints = 0;
+            let totalCredits = 0;
+            let completedSemesters = 0;
+
+            semesters.forEach((semester, index) => {
+                const gpaInput = document.getElementById(`gpa_input_${index}`);
+                const gpa = parseFloat(gpaInput.value);
+                const semCredits = semester.courses.reduce((sum, course) => sum + course.credits, 0);
+
+                if (!isNaN(gpa) && gpa >= 0 && gpa <= 4) {
+                    totalPoints += gpa * semCredits;
+                    totalCredits += semCredits;
+                    completedSemesters++;
+                }
+            });
+
+            const cgpa = totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : '0.00';
+            document.getElementById('overallCGPA').textContent = cgpa;
+            document.getElementById('completedSems').textContent = completedSemesters;
+        }
+
+        function resetGPAMode() {
+            if (confirm('Reset all semester GPAs?')) {
+                semesters.forEach((semester, index) => {
+                    document.getElementById(`gpa_input_${index}`).value = '';
+                });
+                document.getElementById('overallCGPA').textContent = '0.00';
+                document.getElementById('completedSems').textContent = '0';
+            }
+        }
+
+        // Mode 3: Full Course Calculator Functions
+        function renderSemesters() {
+            const container = document.getElementById('semestersContainer');
+            container.innerHTML = '';
+
+            semesters.forEach((semester, semIndex) => {
+                const semesterDiv = document.createElement('div');
+                semesterDiv.className = 'semester';
+                
+                const totalCredits = semester.courses.reduce((sum, course) => sum + course.credits, 0);
+                
+                semesterDiv.innerHTML = `
+                    <div class="semester-header" onclick="toggleSemester(${semIndex})">
+                        <h2>${semester.name}</h2>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <span>Credits: ${totalCredits}</span>
+                            <span class="semester-gpa">GPA: <span id="sem${semIndex}gpa">0.00</span></span>
+                            <span class="toggle-icon" id="toggle${semIndex}">▼</span>
+                        </div>
+                    </div>
+                    <div class="semester-content" id="content${semIndex}">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 20%">Course Code</th>
+                                    <th style="width: 45%">Course Title</th>
+                                    <th style="width: 10%">Credits</th>
+                                    <th style="width: 25%">Grade</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${semester.courses.map((course, courseIndex) => `
+                                    <tr>
+                                        <td class="course-code">${course.code}</td>
+                                        <td class="course-title">${course.title}</td>
+                                        <td class="credits">${course.credits}</td>
+                                        <td>
+                                            <select class="grade-select" id="grade_${semIndex}_${courseIndex}" onchange="calculateCGPA()">
+                                                <option value="">Select Grade</option>
+                                                ${Object.keys(gradePoints).map(grade => 
+                                                    `<option value="${grade}">${grade} (${gradePoints[grade].toFixed(2)})</option>`
+                                                ).join('')}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                
+                container.appendChild(semesterDiv);
+            });
+        }
+
+        function toggleSemester(index) {
+            const content = document.getElementById(`content${index}`);
+            const toggle = document.getElementById(`toggle${index}`);
+            
+            content.classList.toggle('active');
+            toggle.classList.toggle('rotated');
+        }
+
+        function expandAll() {
+            semesters.forEach((_, index) => {
+                document.getElementById(`content${index}`).classList.add('active');
+                document.getElementById(`toggle${index}`).classList.add('rotated');
+            });
+        }
+
+        function collapseAll() {
+            semesters.forEach((_, index) => {
+                document.getElementById(`content${index}`).classList.remove('active');
+                document.getElementById(`toggle${index}`).classList.remove('rotated');
+            });
+        }
+
+        function calculateCGPA() {
+            let totalPoints = 0;
+            let totalCredits = 0;
+            let completedCredits = 0;
+            let semesterGPAs = [];
+
+            semesters.forEach((semester, semIndex) => {
+                let semPoints = 0;
+                let semCredits = 0;
+
+                semester.courses.forEach((course, courseIndex) => {
+                    const gradeSelect = document.getElementById(`grade_${semIndex}_${courseIndex}`);
+                    const grade = gradeSelect.value;
+
+                    if (grade) {
+                        const points = gradePoints[grade] * course.credits;
+                        semPoints += points;
+                        semCredits += course.credits;
+                        totalPoints += points;
+                        totalCredits += course.credits;
+                        completedCredits += course.credits;
+                    }
+                });
+
+                const semGPA = semCredits > 0 ? (semPoints / semCredits).toFixed(2) : '0.00';
+                document.getElementById(`sem${semIndex}gpa`).textContent = semGPA;
+                if (semCredits > 0) {
+                    semesterGPAs.push(parseFloat(semGPA));
+                }
+            });
+
+            const cgpa = totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : '0.00';
+            const avgGPA = semesterGPAs.length > 0 ? 
+                (semesterGPAs.reduce((a, b) => a + b, 0) / semesterGPAs.length).toFixed(2) : '0.00';
+
+            document.getElementById('cgpa').textContent = cgpa;
+            document.getElementById('completedCredits').textContent = completedCredits;
+            document.getElementById('avgGPA').textContent = avgGPA;
+        }
+
+        function resetAll() {
+            if (confirm('Are you sure you want to reset all grades?')) {
+                semesters.forEach((semester, semIndex) => {
+                    semester.courses.forEach((course, courseIndex) => {
+                        document.getElementById(`grade_${semIndex}_${courseIndex}`).value = '';
+                    });
+                });
+                calculateCGPA();
+            }
+        }
+
+        // Initialize
+        window.onload = function() {
+            // Show landing page by default
+            showLanding();
+        };
+    </script>
+</body>
+</html>
